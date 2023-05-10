@@ -60,7 +60,7 @@ function App() {
     ]);
 
     function removeTask(id: string) {
-        let filteredTasks = tasks.filter(t => t.id != id);
+        let filteredTasks = tasks.filter(t => t.id !== id);
         setTasks(filteredTasks);
     }
 
@@ -89,6 +89,15 @@ function App() {
 
     return (
         <div className="App">
+            <Todolist title="What to learn"
+                      tasks={tasksForTodolist}
+                      removeTask={removeTask}
+                      changeFilter={changeFilter}
+                      addTask={addTask}>
+                <div>
+                    <div>Many interesting information</div>
+                </div>
+            </Todolist>
             <Todolist title="What to learn"
                       tasks={tasksForTodolist}
                       removeTask={removeTask}

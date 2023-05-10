@@ -1,5 +1,6 @@
 import React, {ChangeEvent, KeyboardEvent, useRef, useState} from 'react';
 import {FilterValuesType} from './App';
+import {useAutoAnimate} from "@formkit/auto-animate/react";
 
 type TaskType = {
     id: string
@@ -13,41 +14,44 @@ type PropsType = {
     removeTask: (taskId: string) => void
     changeFilter: (value: FilterValuesType) => void
     addTask: (title: string) => void
+    children?: React.ReactNode //+
 }
-
-export function Todolist(props: PropsType) {
+// export function Todolist(props: PropsType) { //+
+export const Todolist: React.FC<PropsType> = ({children, ...props}) => {
     let [title, setTitle] = useState("")
 
     const addTask = () => {
         props.addTask(title);
-        setTitle("");
+        setTitle("");  //+
+        if (onChangeRef.current) {
+            props.addTask(onChangeRef.current.value)
+            onChangeRef.current.value = '';//+
+        }
     }
-
+    const [listRef] = useAutoAnimate<HTMLUListElement>()
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setTitle(e.currentTarget.value)
     }
-
-
     const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             addTask();
         }
     }
-
     const onAllClickHandler = () => props.changeFilter("all");
     const onActiveClickHandler = () => props.changeFilter("active");
     const onCompletedClickHandler = () => props.changeFilter("completed");
-
+    let onChangeRef = useRef<HTMLInputElement>(null)//+
     return <div>
         <h3>{props.title}</h3>
         <div>
             <input value={title}
                    onChange={onChangeHandler}
-                   onKeyPress={onKeyPressHandler}
+                   onKeyDown={onKeyPressHandler}
+                   ref={onChangeRef} //+
             />
             <button onClick={addTask}>+</button>
         </div>
-        <ul>
+        <ul ref={listRef}>
             {
                 props.tasks.map(t => {
 
@@ -66,23 +70,9 @@ export function Todolist(props: PropsType) {
             <button onClick={onActiveClickHandler}>Active</button>
             <button onClick={onCompletedClickHandler}>Completed</button>
         </div>
+        {children}
     </div>
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //----------------------------------------------------------------------------------
